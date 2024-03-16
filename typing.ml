@@ -7,9 +7,22 @@ type environment =
     {localvar: (vname * tp) list; 
      funbind: (vname * fpdecl) list}
 
-let rec tp_var_local envLocal var = None
+let tp_fun fpdecl = match fpdecl with
+| FPdecl(tp, _, _) -> tp 
 
-let rec tp_var_Funbind envFunbind var = None
+let rec tp_var_local envLocal var = match envLocal with
+| (vname, tp) :: reste -> 
+        if vname = var
+        then Some tp
+        else tp_var_local reste var
+| [] -> None 
+
+let rec tp_var_Funbind envFunbind var = match envFunbind with
+| (vname, fpdecl) :: reste ->
+        if vname = var
+        then Some (tp_fun fpdecl)
+        else tp_var_Funbind reste var
+| [] -> None  
 
 let rec tp_var env var = match tp_var_local env.localvar var with
 |None -> (match tp_var_Funbind env.funbind var with
@@ -62,7 +75,6 @@ let rec tp_expr env exp = match exp with
         then tp_expr env e2 
         else failwith "Types différents dans les deux branches !"
 |_-> failwith "Mais qu'est-ce que c'est que ça ???"
-
 
 (* TODO: implement *)
 let tp_prog (Prog (fdfs, e)) = IntT
