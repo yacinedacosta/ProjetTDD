@@ -35,7 +35,7 @@ let rec tp_var env var = match tp_var_local env.localvar var with
 *)(*liste assoc*)
 
 (*TO DO*)
-let tp_application fct liste_args = BoolT
+let tp_application fct liste_args = IntT
 
 let tp_binop operateur toperande1 toperande2 = match operateur with
 | BArith(_) -> 
