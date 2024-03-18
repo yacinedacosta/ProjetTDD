@@ -37,7 +37,6 @@ let rec tp_var env var = match tp_var_local env.localvar var with
 (*TO DO*)
 let tp_application fct liste_args = BoolT
 
-(*TO DO*)
 let tp_binop operateur toperande1 toperande2 = match operateur with
 | BArith(_) -> 
         if toperande1=IntT && toperande2=IntT 
