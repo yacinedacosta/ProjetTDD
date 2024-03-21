@@ -8,6 +8,7 @@ type environment =
 let tp_fun fpdecl = match fpdecl with
 | FPdecl(tp, _, _) -> tp 
 
+(* tp_var_local : (vname * tp) list -> vname -> tp option      avec tp option = Some tp ou None*)
 let rec tp_var_local envLocal var = match envLocal with
 | (vname, tp) :: reste -> 
         if vname = var
@@ -15,6 +16,7 @@ let rec tp_var_local envLocal var = match envLocal with
         else tp_var_local reste var
 | [] -> None 
 
+(* tp_var_Funbind : (vname * fpdecl) list -> vname -> tp option *)
 let rec tp_var_Funbind envFunbind var = match envFunbind with
 | (vname, fpdecl) :: reste ->
         if vname = var
@@ -22,6 +24,7 @@ let rec tp_var_Funbind envFunbind var = match envFunbind with
         else tp_var_Funbind reste var
 | [] -> None  
 
+(* tp_var : env -> vname -> tp *)
 let rec tp_var env var = match tp_var_local env.localvar var with
 |None -> (match tp_var_Funbind env.funbind var with
         |None -> failwith "La variable n'est pas dans l'environnement"
@@ -29,8 +32,9 @@ let rec tp_var env var = match tp_var_local env.localvar var with
 |Some t -> t
 
 (*TO DO*)
-let tp_application fct liste_args = BoolT
+let tp_application fct liste_args = IntT
 
+(* tp_binop : operateur -> tp -> tp -> tp *)
 let tp_binop operateur toperande1 toperande2 = match operateur with
 | BArith(_) -> 
         if toperande1=IntT && toperande2=IntT 
@@ -45,6 +49,7 @@ let tp_binop operateur toperande1 toperande2 = match operateur with
         then BoolT
         else failwith "erreur"
         
+(* tp_expr : env * exp -> tp *)
 let rec tp_expr env exp = match exp with
 (* Constantes *)
 |Const (BoolV _) -> BoolT  
@@ -66,7 +71,7 @@ let rec tp_expr env exp = match exp with
         if tp_expr env e1 = BoolT && tp_expr env e2 = tp_expr env e3 
         then tp_expr env e2 
         else failwith "Types différents dans les deux branches !"
-|_-> failwith "Mais qu'est-ce que c'est que ça ???"
+|_-> failwith "Mais qu'est-ce que c'est ???"
 
 (* TODO: implement *)
 let tp_prog (Prog (fdfs, e)) = IntT
