@@ -57,9 +57,9 @@ let rec tp_expr env exp = match exp with
 (* Variables *)
 |VarE (e) -> tp_var env e
 (* Fonctions *)
-|CallE (e1::liste_exp) -> 
-        let fct = tp_expr env e1 in 
-        let arguments = List.map (tp_expr env) liste_exp in
+|CallE (f::args) -> 
+        let fct = tp_expr env f in 
+        let arguments = List.map (tp_expr env) args in
         tp_application fct arguments
 (* pour que le filtrage soit exhaustif *)
 |CallE(_) -> failwith "Liste d'arguments vide !"
