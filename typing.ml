@@ -39,15 +39,15 @@ let tp_binop operateur toperande1 toperande2 = match operateur with
 | BArith(_) -> 
         if toperande1=IntT && toperande2=IntT 
         then IntT 
-        else failwith "erreur"
+        else failwith "Erreur : Les deux opérandes ne sont pas des entier !"
 | BCompar(_) -> 
         if toperande1 = toperande2
         then toperande1
-        else failwith "erreur"
+        else failwith "Erreur : Les deux opérandes ne sont pas du même type !"
 | BLogic(_) -> 
         if toperande1=BoolT && toperande2=BoolT
         then BoolT
-        else failwith "erreur"
+        else failwith "Erreur : Les deux opérandes ne sont pas des booléens !"
         
 (* tp_expr : env * exp -> tp *)
 let rec tp_expr env exp = match exp with
