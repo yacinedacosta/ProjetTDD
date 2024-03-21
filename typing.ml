@@ -1,8 +1,6 @@
-
 open Lang
   
 (* Environments *)
-
 type environment = 
     {localvar: (vname * tp) list; 
      funbind: (vname * fpdecl) list}
@@ -30,14 +28,9 @@ let rec tp_var env var = match tp_var_local env.localvar var with
         |Some t -> t)
 |Some t -> t
 
-(*|((nom, tp)::reste) -> if nom=var then tp else tp_var {localvar = reste; funbind = env.funbind} var
-|[]-> failwith "La variable n'est pas dans l'environnement !"
-*)(*liste assoc*)
-
 (*TO DO*)
 let tp_application fct liste_args = BoolT
 
-(*TO DO*)
 let tp_binop operateur toperande1 toperande2 = match operateur with
 | BArith(_) -> 
         if toperande1=IntT && toperande2=IntT 
@@ -52,7 +45,6 @@ let tp_binop operateur toperande1 toperande2 = match operateur with
         then BoolT
         else failwith "erreur"
         
-
 let rec tp_expr env exp = match exp with
 (* Constantes *)
 |Const (BoolV _) -> BoolT  
