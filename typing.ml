@@ -85,7 +85,15 @@ let rec tp_expr env exp = match exp with
 |_-> failwith "Mais qu'est-ce que c'est ???"
 
 
-let tp_fdefn env fdefn = IntT
+let tp_fdefn = fun fpdefn -> match fpdefn with
+| Fundefn (fpdecl, _) -> (name_of_fpdecl fpdecl, fpdecl)
+| _ -> failwith "Pas de procédures"
 
-(* TODO: implement *)
-let tp_prog (Prog (fdfs, e)) = IntT
+(** 
+    Arguments : 
+        - fdfs : fpdefn list -> liste de définition de fonctions
+        - e : expr -> expression finale à typer
+*)
+let tp_prog (Prog (fdfs, e)) = 
+        let environment = { localvar = []; funbind = List.map tp_fdefn fdfs} in
+        tp_expr environment e
