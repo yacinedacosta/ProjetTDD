@@ -39,11 +39,11 @@ let rec tp_var env var = match tp_var_local env.localvar var with
 (*TO DO*)
 let rec tp_application fct liste_args = match liste_args with
 | [] -> fct
-| (tp :: reste) -> match fct with 
+| (tp :: reste) -> (match fct with 
         | FunT(type1, type2) -> if type1 = tp 
                                 then tp_application type2 reste
                                 else failwith "Les arguments ne correspondent pas a la définition de la fonction !"
-| _ -> failwith "Err"
+        | _ -> failwith "Err")
 
 (* tp_binop : operateur -> tp -> tp -> tp *)
 let tp_binop operateur toperande1 toperande2 = match operateur with
@@ -53,7 +53,7 @@ let tp_binop operateur toperande1 toperande2 = match operateur with
         else failwith "Erreur : Les deux opérandes ne sont pas des entier !"
 | BCompar(_) -> 
         if toperande1 = toperande2
-        then toperande1
+        then BoolT
         else failwith "Erreur : Les deux opérandes ne sont pas du même type !"
 | BLogic(_) -> 
         if toperande1=BoolT && toperande2=BoolT
@@ -85,8 +85,12 @@ let rec tp_expr env exp = match exp with
 |_-> failwith "Mais qu'est-ce que c'est ???"
 
 
-let tp_fdefn = fun fpdefn -> match fpdefn with
-| Fundefn (fpdecl, _) -> (name_of_fpdecl fpdecl, fpdecl)
+let tp_fdefn env fpdef = match fpdef with
+| Fundefn (fpdecl, exp) -> let FPdecl(tpf, namef, vardeclf) = fpdecl in
+                                let listeArgs = List.map (fun (Vardecl (v,t)) -> (v,t)) vardeclf in
+                                let env = {localvar = listeArgs@env.localvar; funbind = env.funbind} in
+                                if (tp_expr env exp) = tpf then () 
+                                        else failwith "Le type de f n'est pas égal au type de l'expression"  
 | _ -> failwith "Pas de procédures"
 
 (** 
@@ -94,6 +98,8 @@ let tp_fdefn = fun fpdefn -> match fpdefn with
         - fdfs : fpdefn list -> liste de définition de fonctions
         - e : expr -> expression finale à typer
 *)
+
 let tp_prog (Prog (fdfs, e)) = 
-        let environment = { localvar = []; funbind = List.map tp_fdefn fdfs} in
+        let environment = { localvar = []; funbind = []} in   (*remplir funbind dans uen fonction auxiliaire*)
+        let _ = List.map (tp_fdefn environment) fdfs in 
         tp_expr environment e
