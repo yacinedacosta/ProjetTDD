@@ -100,6 +100,6 @@ let tp_fdefn env fpdef = match fpdef with
 *)
 
 let tp_prog (Prog (fdfs, e)) = 
-        let environment = { localvar = []; funbind = []} in   (*remplir funbind dans uen fonction auxiliaire*)
+        let environment = { localvar = []; funbind = []} in   (*remplir funbind dans une fonction auxiliaire*)
         let _ = List.map (tp_fdefn environment) fdfs in 
         tp_expr environment e

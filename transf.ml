@@ -5,21 +5,36 @@ open Lang
 
 module StringSet = Set.Make(String)
 
-(*Pour savoir si une fonction est appelée dans une expression*)
-(*let containsF f exp = match exp with*)
-(*
-let is_tailrec_expr f exp = match exp with
-  |IfThenElse (condition, exp1, exp2 )-> not (containsF f condition) &&
+let rec names_expr = function
+    Const(_) -> StringSet.empty
+   | VarE v -> StringSet.singleton v
+   | BinOp(_, e1, e2) -> StringSet.union (names_expr e1) (names_expr e2)
+   | IfThenElse(cond, e1, e2) -> StringSet.union (names_expr cond) (StringSet.union (names_expr e1) (names_expr e2))
+   | CallE (f::args) -> List.fold_left (fun acc a -> StringSet.union acc (names_expr a)) (names_expr f) args
+
+
+
+let rec is_tailrec_expr f exp = match exp with
+  |IfThenElse (condition, exp1, exp2 )-> not(StringSet.mem f (names_expr condition)) &&    (*StringSet.mem vérifie la présence de f dans l'ensemble créé à partir des variables de la condition*)
                         is_tailrec_expr f exp1 && is_tailrec_expr f exp2
-  |BinOp (op, exp1, exp2) -> is_tailrec_expr f exp1 && is_tailrec_expr f exp1
-  |CallE [] -> true    
-  |CallE (expr::liste) -> is_tailrec_expr f expr && is_tailrec_expr f liste
-  |_ -> true
-*)
+  (*|BinOp (op, exp1, exp2) -> is_tailrec_expr f exp1 && is_tailrec_expr f exp1*)
+  |CallE [] -> true  
+  |CallE (expr::liste) -> (not (StringSet.mem f (names_expr expr))) && is_tailrec_expr f (CallE(liste)) 
+  |expr -> not (StringSet.mem f (names_expr expr))
 
-(* TODO: implement *)
-let rec names_expr = StringSet.empty
 
-(* TODO: implement *)
-let transf_prog (Prog(fdfs, e)) = Prog(fdfs, e)
+
+let transf_expr f listep e = 
+  if not (is_tailrec_expr f e) then Return e else
+    let rec trad = function
+    |IfThenElse (condition, exp1, exp2)-> Cond(condition, trad exp1, trad exp2)
+    |CallE (nom::args) -> Assign (listep ,args)
+    |exp -> Return exp  
+  in While (Const(BoolV true), trad(e)) 
+
+
+let transf_fpdefn (Fundefn (FPdecl (tpf,nomf, argsliste), exp)) = (Procdefn (FPdecl (tpf,nomf, argsliste), transf_expr nomf (List.map name_of_vardecl argsliste) exp))
+
+
+let transf_prog (Prog(fdfs, e)) = Prog(List.map transf_fpdefn fdfs, e)
 
