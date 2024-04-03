@@ -1,3 +1,7 @@
+(******************************************************************
+    UNIQUEMENT POUR LES DEMONSTRATIONS, LE CODE N'EST PAS LE NOTRE
+*******************************************************************)
+
 open PPrint
 open Lang
 

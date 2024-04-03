@@ -94,12 +94,18 @@ let tp_fdefn env fpdef = match fpdef with
 | _ -> failwith "Pas de procédures"
 
 
+let assoc_fonction fdfs = match fdfs with
+| Fundefn (fpdecl, exp) -> (name_of_fpdecl fpdecl, fpdecl)
+| _ -> failwith "Pas de procédures"
+
 (** 
     Arguments : 
         - fdfs : fpdefn list -> liste de définition de fonctions
         - e : expr -> expression finale à typer
 *)
 let tp_prog (Prog (fdfs, e)) = 
-        let environment = { localvar = []; funbind = []} in   (*remplir funbind dans une fonction auxiliaire*)
+        let environment = { localvar = []; funbind = List.map (assoc_fonction) fdfs} in   (*remplir funbind dans une fonction auxiliaire*)
         let _ = List.map (tp_fdefn environment) fdfs in 
         tp_expr environment e
+
+        
