@@ -36,7 +36,7 @@ let rec tp_var env var = match tp_var_local env.localvar var with
         |Some t -> t)
 |Some t -> t
 
-(*TO DO*)
+
 let rec tp_application fct liste_args = match liste_args with
 | [] -> fct
 | (tp :: reste) -> (match fct with 
@@ -93,12 +93,12 @@ let tp_fdefn env fpdef = match fpdef with
                                         else failwith "Le type de f n'est pas égal au type de l'expression"  
 | _ -> failwith "Pas de procédures"
 
+
 (** 
     Arguments : 
         - fdfs : fpdefn list -> liste de définition de fonctions
         - e : expr -> expression finale à typer
 *)
-
 let tp_prog (Prog (fdfs, e)) = 
         let environment = { localvar = []; funbind = []} in   (*remplir funbind dans une fonction auxiliaire*)
         let _ = List.map (tp_fdefn environment) fdfs in 
