@@ -16,7 +16,9 @@ Pour tester la vérification de types :
     ocaml
     #use "use.ml";;
     open Parser;;
-    let f = parse "Tests/fichier_voulu.ml";;;
+    let f = parse "Tests/fichier_voulu.ml";;
+    open Typing;;
+    tp_prog f;;
 ```
 
 Pour tester la transformation : 
